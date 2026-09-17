@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -8,20 +8,32 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    libpq-dev
 
-# Install Composer
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions required for Laravel
+RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# Copy existing application directory contents
 COPY . .
 
-# Install PHP dependencies
+# Install dependencies using composer
 RUN composer install --no-dev --optimize-autoloader
 
-# Expose port and start server
+# Set permissions for storage and bootstrap cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Expose port 10000 for Render
 EXPOSE 10000
+
+# Start PHP built-in server (or use artisan serve bound to Render's port)
 CMD php artisan serve --host=0.0.0.0 --port=10000
