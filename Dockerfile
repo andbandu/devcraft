@@ -26,6 +26,10 @@ WORKDIR /var/www/html
 # Copy existing application directory contents
 COPY . .
 
+# Install Node.js dependencies and build assets (Tailwind/Vite)
+RUN apt-get install -y nodejs npm
+RUN npm install && npm run build
+
 # Install dependencies using composer
 RUN composer install --no-dev --optimize-autoloader
 
