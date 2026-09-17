@@ -23,14 +23,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy existing application directory contents
+# Copy project files
 COPY . .
 
-# Install Node.js dependencies and build assets (Tailwind/Vite)
-RUN apt-get install -y nodejs npm
-RUN npm install && npm run build
-
-# Install dependencies using composer
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Set permissions for storage and bootstrap cache
@@ -39,5 +35,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port 10000 for Render
 EXPOSE 10000
 
-# Start PHP built-in server (or use artisan serve bound to Render's port)
+# Start server and clear config cache on boot
 CMD php artisan config:clear && php artisan cache:clear && php artisan serve --host=0.0.0.0 --port=10000
