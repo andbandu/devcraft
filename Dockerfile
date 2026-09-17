@@ -21,14 +21,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy dependency definitions first for Docker layer caching
-COPY composer.json composer.lock ./
+# Copy project files first so artisan is present for composer post-autoload-dump scripts
+COPY . .
 
 # Install PHP dependencies without dev packages
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-# Copy project files
-COPY . .
 
 # Ensure storage directories exist and have proper permissions
 RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache \
