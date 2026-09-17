@@ -1,11 +1,28 @@
 <?php
 
+use App\Models\Post;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
+
 test('homepage returns successful response with blog title and articles', function () {
+    Post::create([
+        'title' => 'Mastering Modern CSS Grid',
+        'category' => 'Frontend',
+        'badge_class' => 'badge-emerald',
+        'gradient' => 'linear-gradient(135deg, #064e3b 0%, #047857 100%)',
+        'emoji' => '🎨',
+        'read_time' => '5',
+        'author_name' => 'Marcus Chen',
+        'author_image' => 'https://example.com/avatar.jpg',
+        'snippet' => 'How to construct robust fluid layouts.',
+    ]);
+
     $response = $this->get('/');
 
     $response->assertStatus(200);
     $response->assertSee('DevCraft');
-    $response->assertSee('Building Resilient Distributed Systems');
+    $response->assertSee('Mastering Modern CSS Grid');
 });
 
 test('single blog post detail page returns successful response', function () {

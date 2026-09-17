@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BlogController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('blog.index');
+
+Route::get('/', [BlogController::class, 'index'])->name('blog.index');
 
 Route::get('/blog/{slug?}', function (?string $slug = null) {
     return view('blog.show', ['slug' => $slug]);
