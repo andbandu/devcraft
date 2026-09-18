@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Post;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -57,4 +58,20 @@ test('contact page returns successful response with form and FAQ', function () {
     $response->assertStatus(200);
     $response->assertSee('Get in Touch with Editorial');
     $response->assertSee('Frequently Asked Questions');
+});
+
+test('post factory creates valid mock post records', function () {
+    $post = Post::factory()->create();
+
+    expect($post->id)->not->toBeNull()
+        ->and($post->title)->not->toBeEmpty()
+        ->and($post->category)->not->toBeEmpty()
+        ->and($post->author_name)->not->toBeEmpty();
+});
+
+test('database seeder can run idempotently multiple times', function () {
+    $this->seed(DatabaseSeeder::class);
+    $this->seed(DatabaseSeeder::class);
+
+    expect(Post::count())->toBeGreaterThanOrEqual(6);
 });
